@@ -45,7 +45,7 @@ const Contact = () => {
           {/* Contact Info Cards */}
           <div className="space-y-6">
             <h2 className="font-display text-3xl font-bold text-foreground mb-8">Contact Information</h2>
-            
+
             <Card className="border-border hover:shadow-elegant transition-shadow">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-lg">
@@ -71,8 +71,8 @@ const Contact = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <p className="text-muted-foreground">Primary: +91 98765 43210</p>
-                <p className="text-muted-foreground">Alternate: +91 98765 43211</p>
+                <p className="text-muted-foreground">Primary: +91 96376 99199</p>
+                <p className="text-muted-foreground">Alternate: +91 96376 99199</p>
               </CardContent>
             </Card>
 
@@ -84,7 +84,7 @@ const Contact = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">hello@Kareems.com</p>
+                <p className="text-muted-foreground">kareems.nagpur@gmail.com</p>
               </CardContent>
             </Card>
 
@@ -104,13 +104,13 @@ const Contact = () => {
             {/* Quick Action Buttons */}
             <div className="pt-4 space-y-3">
               <Button className="w-full" size="lg" asChild>
-                <a href="tel:+919876543210" className="flex items-center justify-center gap-2">
+                <a href="tel:+919637699199" className="flex items-center justify-center gap-2">
                   <Phone size={18} />
                   Call Now
                 </a>
               </Button>
               <Button variant="outline" className="w-full" size="lg" asChild>
-                <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
+                <a href="https://wa.me/+919637699199" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2">
                   <MessageCircle size={18} />
                   WhatsApp Us
                 </a>

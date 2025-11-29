@@ -6,6 +6,7 @@ const Footer = () => {
     { name: "Home", path: "/" },
     { name: "Menu", path: "/menu" },
     { name: "Contact", path: "/contact" },
+    { name: "About us", path: "/aboutus" },
   ];
 
   return (
@@ -55,11 +56,11 @@ const Footer = () => {
               </li>
               <li className="flex items-center space-x-2 text-sm text-background/80">
                 <Phone size={16} className="flex-shrink-0" />
-                <span>+91 86690 53831</span>
+                <span>+91 96376 99199</span>
               </li>
               <li className="flex items-center space-x-2 text-sm text-background/80">
                 <Mail size={16} className="flex-shrink-0" />
-                <span>hello@Kareems.com</span>
+                <span>kareems.nagpur@gmail.com</span>
               </li>
             </ul>
           </div>
