@@ -11,7 +11,7 @@ const Home = () => {
         <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${heroBg})` }}>
           <div className="absolute inset-0 bg-gradient-hero"></div>
         </div>
-        
+
         <div className="relative z-10 text-center text-primary-foreground px-4 space-y-6 animate-in fade-in duration-1000">
           <h1 className="font-display text-6xl md:text-7xl lg:text-8xl font-bold leading-tight">
             Kareem's

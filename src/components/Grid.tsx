@@ -76,7 +76,7 @@ export default function Grid(): JSX.Element {
 
               {/* Content */}
               <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6 py-8">
-                
+
                 {/* Matching Home Theme */}
                 <h3 className="font-display text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
                   {item.title}

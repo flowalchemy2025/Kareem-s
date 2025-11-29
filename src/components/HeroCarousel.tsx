@@ -63,6 +63,7 @@ export default function HeroCarousel() {
   };
 
   // Function to start the next cycle (zoom in and wait)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const startNextCycle = () => {
     setTimeout(() => {
       setIsZoomed(true);
@@ -88,7 +89,7 @@ export default function HeroCarousel() {
         timerRef.current = null;
       }
     };
-  }, [index, reduceMotion]);
+  }, [index, reduceMotion, startNextCycle]);
 
   // Hover pause & resume
   useEffect(() => {
@@ -152,9 +153,8 @@ export default function HeroCarousel() {
             <div
               key={img.id}
               aria-hidden={!visible}
-              className={`absolute inset-0 transition-opacity duration-500 ease-in-out will-change-opacity ${
-                visible ? "opacity-100 z-10" : "opacity-0 z-0"
-              }`}
+              className={`absolute inset-0 transition-opacity duration-500 ease-in-out will-change-opacity ${visible ? "opacity-100 z-10" : "opacity-0 z-0"
+                }`}
             >
               {/* Smoothest zoom effect — fixed, clean, no resizing */}
               <div
@@ -212,9 +212,8 @@ export default function HeroCarousel() {
               onClick={() => handleIndicatorClick(i)}
               role="tab"
               aria-selected={i === index}
-              className={`w-3 h-3 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400 ${
-                i === index ? "bg-white" : "bg-white/40"
-              }`}
+              className={`w-3 h-3 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-400 ${i === index ? "bg-white" : "bg-white/40"
+                }`}
               aria-label={`Show slide ${i + 1}`}
             />
           ))}
