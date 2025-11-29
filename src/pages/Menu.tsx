@@ -15,21 +15,23 @@ const Menu = () => {
         {
           image: bruschettaImg,
           title: "Bruschetta Classica",
-          description: "Toasted bread topped with fresh tomatoes, basil, garlic, and olive oil",
+          description:
+            "Toasted bread topped with fresh tomatoes, basil, garlic, and olive oil",
           price: "₹450",
           isVeg: true,
         },
         {
           image: bruschettaImg,
           title: "Calamari Fritti",
-          description: "Crispy fried calamari rings served with spicy marinara sauce",
+          description: "Crispy fried calamari rings served with marinara sauce",
           price: "₹650",
           isVeg: false,
         },
         {
           image: bruschettaImg,
           title: "Caprese Salad",
-          description: "Fresh mozzarella, tomatoes, and basil drizzled with balsamic glaze",
+          description:
+            "Fresh mozzarella, tomatoes, and basil drizzled with balsamic glaze",
           price: "₹550",
           isVeg: true,
         },
@@ -41,14 +43,16 @@ const Menu = () => {
         {
           image: pizzaImg,
           title: "Margherita Pizza",
-          description: "Classic pizza with San Marzano tomatoes, fresh mozzarella, and basil",
+          description:
+            "Classic pizza with San Marzano tomatoes, fresh mozzarella, and basil",
           price: "₹750",
           isVeg: true,
         },
         {
           image: pizzaImg,
           title: "Seafood Risotto",
-          description: "Creamy risotto with prawns, mussels, and calamari in white wine sauce",
+          description:
+            "Creamy risotto with prawns, mussels, and calamari in wine sauce",
           price: "₹1,200",
           isVeg: false,
         },
@@ -67,7 +71,8 @@ const Menu = () => {
         {
           image: tiramisuImg,
           title: "Tiramisu",
-          description: "Classic Italian dessert with espresso-soaked ladyfingers and mascarpone",
+          description:
+            "Classic Italian dessert with espresso-soaked ladyfingers & mascarpone",
           price: "₹450",
           isVeg: true,
         },
@@ -81,7 +86,8 @@ const Menu = () => {
         {
           image: tiramisuImg,
           title: "Cannoli Siciliani",
-          description: "Crispy pastry shells filled with sweet ricotta and chocolate chips",
+          description:
+            "Crispy pastry shells filled with sweet ricotta & chocolate chips",
           price: "₹425",
           isVeg: true,
         },
@@ -100,14 +106,14 @@ const Menu = () => {
         {
           image: bruschettaImg,
           title: "Fresh Lemonade",
-          description: "Homemade lemonade with mint and fresh lime",
+          description: "Homemade lemonade with mint and lime",
           price: "₹250",
           isVeg: true,
         },
         {
           image: bruschettaImg,
           title: "House Wine",
-          description: "Selection of premium Italian red and white wines",
+          description: "Selection of premium Italian wines",
           price: "₹800",
           isVeg: true,
         },
@@ -119,21 +125,29 @@ const Menu = () => {
         {
           image: pizzaImg,
           title: "Truffle Pasta",
-          description: "Handmade pasta with black truffle, parmesan, and butter sauce",
+          description:
+            "Handmade pasta with black truffle, parmesan, and butter sauce",
           price: "₹1,650",
           isVeg: true,
         },
         {
           image: pizzaImg,
           title: "Grilled Branzino",
-          description: "Whole Mediterranean sea bass grilled with herbs and lemon",
+          description:
+            "Mediterranean sea bass grilled with herbs and lemon",
           price: "₹1,800",
           isVeg: false,
         },
       ],
     },
   ];
+
+  // ------------------------------
+  // FILTERING ENGINE
+  // ------------------------------
+
   const categories = [
+    "Show All",
     "Starters",
     "Main Course",
     "Desserts",
@@ -141,19 +155,42 @@ const Menu = () => {
     "Chef's Specials",
   ];
 
-  // Active Category State
-  const [activeCategory, setActiveCategory] = useState("Starters");
+  const [activeCategory, setActiveCategory] = useState("Show All");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [vegFilter, setVegFilter] = useState("All"); // All | Veg | NonVeg
 
-  // Filtered Category Data
-  const filteredCategory = menuCategories.find(
-    (cat) => cat.title === activeCategory
+  // Flatten all items for "Show All"
+  const allItems = menuCategories.flatMap((cat) =>
+    cat.items.map((item) => ({
+      ...item,
+      category: cat.title,
+    }))
   );
+
+  // Filter by main category
+  const categoryFilteredItems =
+    activeCategory === "Show All"
+      ? allItems
+      : menuCategories.find((cat) => cat.title === activeCategory)?.items || [];
+
+  // Search filter
+  const searchFilteredItems = categoryFilteredItems.filter((item) =>
+    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Veg / NonVeg filter
+  const finalFilteredItems = searchFilteredItems.filter((item) => {
+    if (vegFilter === "Veg") return item.isVeg === true;
+    if (vegFilter === "NonVeg") return item.isVeg === false;
+    return true; // All
+  });
+
   return (
     <div className="min-h-screen">
-      {/* Hero Carousel Section */}
+      {/* Hero */}
       <MenuCarousel />
 
-      {/* Download Menu Section */}
+      {/* Download Menu */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-center">
           <Button size="lg" variant="outline" className="gap-2">
@@ -163,20 +200,65 @@ const Menu = () => {
         </div>
       </section>
 
-      {/* Category Filter */}
-      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      {/* Search + Veg Filters + Category Filters */}
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-4">
+
+        {/* Search */}
+        <div className="flex justify-center">
+          <input
+            type="text"
+            placeholder="Search dishes..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-72 px-4 py-2 rounded-lg border bg-secondary text-foreground shadow-sm 
+                       focus:ring-2 focus:ring-primary transition"
+          />
+        </div>
+
+        {/* Veg / NonVeg */}
+        <div className="flex justify-center gap-3">
+          <button
+            onClick={() => setVegFilter("All")}
+            className={`px-4 py-2 rounded-full border text-sm transition ${vegFilter === "All"
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-secondary text-secondary-foreground"
+              }`}
+          >
+            All
+          </button>
+
+          <button
+            onClick={() => setVegFilter("Veg")}
+            className={`px-4 py-2 rounded-full border text-sm transition ${vegFilter === "Veg"
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-secondary text-secondary-foreground"
+              }`}
+          >
+            Veg
+          </button>
+
+          <button
+            onClick={() => setVegFilter("NonVeg")}
+            className={`px-4 py-2 rounded-full border text-sm transition ${vegFilter === "NonVeg"
+              ? "bg-primary text-primary-foreground border-primary"
+              : "bg-secondary text-secondary-foreground"
+              }`}
+          >
+            Non-Veg
+          </button>
+        </div>
+
+        {/* Category Filter */}
         <div className="flex justify-center gap-3 flex-wrap">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`
-                px-4 py-2 rounded-full text-sm font-medium border transition-all duration-300
+              className={`px-4 py-2 rounded-full text-sm font-medium border transition-all duration-300
                 ${activeCategory === category
                   ? "bg-primary text-primary-foreground border-primary shadow-md"
                   : "bg-secondary text-secondary-foreground border-border hover:bg-accent hover:text-accent-foreground"
-                }
-              `}
+                }`}
             >
               {category}
             </button>
@@ -184,51 +266,85 @@ const Menu = () => {
         </div>
       </section>
 
-      {/* Menu Categories */}
+      {/* Final Menu Display */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {filteredCategory && (
-          <div className="space-y-8">
-            {/* Title */}
-            <div className="text-center space-y-2">
-              <h2 className="font-display text-4xl font-bold text-foreground">
-                {filteredCategory.title}
-              </h2>
-              <div className="w-24 h-1 bg-accent mx-auto"></div>
-            </div>
+        <div className="text-center space-y-2">
+          <h2 className="font-display text-4xl font-bold text-foreground">
+            {activeCategory === "Show All" ? "All Dishes" : activeCategory}
+          </h2>
+          <div className="w-24 h-1 bg-accent mx-auto"></div>
+        </div>
 
-            {/* Items Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredCategory.items.map((item, idx) => (
-                <MenuCard key={idx} {...item} />
-              ))}
-            </div>
-          </div>
-        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
+          {finalFilteredItems.map((item, idx) => (
+            <MenuCard key={idx} {...item} />
+          ))}
+        </div>
       </section>
 
-
-      {/* CTA Section */}
+      {/* CTA – Balanced 3-Column Layout */}
       <section className="bg-secondary py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground">Ready to Order?</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+
+          <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground text-center">
+            Ready to Order?
+          </h2>
+
+          <p className="text-muted-foreground text-center max-w-2xl mx-auto mt-2 mb-10">
             Book your table or order online for delivery through our partners
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" asChild>
-              <a href="/contact">Book Table Now</a>
-            </Button>
+
+          {/* CTA Buttons */}
+          <div className="max-w-3xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 mt-6">
+
+            {/* Zomato */}
             <Button variant="outline" size="lg" asChild>
-              <a href="https://zomato.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+              <a
+                href="https://zomato.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2"
+              >
                 Order on Zomato <ExternalLink size={16} />
               </a>
             </Button>
+
+            {/* Center Buttons */}
+            <div className="flex flex-col gap-3 items-center">
+              <Button size="lg" asChild>
+                <a href="/contact">Book Table Now</a>
+              </Button>
+
+              <Button
+                variant="default"
+                size="lg"
+                asChild
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <a
+                  href="https://wa.me/919876543210"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2"
+                >
+                  Connect on WhatsApp <ExternalLink size={16} />
+                </a>
+              </Button>
+            </div>
+
+            {/* Swiggy */}
             <Button variant="outline" size="lg" asChild>
-              <a href="https://swiggy.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+              <a
+                href="https://swiggy.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2"
+              >
                 Order on Swiggy <ExternalLink size={16} />
               </a>
             </Button>
           </div>
+
         </div>
       </section>
     </div>
