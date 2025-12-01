@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { ChefHat, Clock, MapPin } from "lucide-react";
 import HeroCarousel from "@/components/HeroCarousel";
 import Grid from "@/components/Grid";  // <- make sure this path matches your file
+import Chatbot from "@/components/Chatbot";
 
 const Home = () => {
   return (
@@ -14,6 +15,9 @@ const Home = () => {
 
       {/* style Grid (2x2) */}
       <Grid/>
+
+      Chatbot UI
+      <Chatbot/>
 
       {/* Features Section */}
       <section className="py-20 bg-background">
