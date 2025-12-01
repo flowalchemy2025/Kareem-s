@@ -6,141 +6,17 @@ import bruschettaImg from "@/assets/bruschetta.jpg";
 import pizzaImg from "@/assets/pizza.jpg";
 import tiramisuImg from "@/assets/tiramisu.jpg";
 import { useState } from "react";
+import { api } from "@/lib/api"; // this connects axios to backend
+import { useEffect } from "react";
 
 const Menu = () => {
-  const menuCategories = [
-    {
-      title: "Starters",
-      items: [
-        {
-          image: bruschettaImg,
-          title: "Bruschetta Classica",
-          description:
-            "Toasted bread topped with fresh tomatoes, basil, garlic, and olive oil",
-          price: "₹450",
-          isVeg: true,
-        },
-        {
-          image: bruschettaImg,
-          title: "Calamari Fritti",
-          description: "Crispy fried calamari rings served with marinara sauce",
-          price: "₹650",
-          isVeg: false,
-        },
-        {
-          image: bruschettaImg,
-          title: "Caprese Salad",
-          description:
-            "Fresh mozzarella, tomatoes, and basil drizzled with balsamic glaze",
-          price: "₹550",
-          isVeg: true,
-        },
-      ],
-    },
-    {
-      title: "Main Course",
-      items: [
-        {
-          image: pizzaImg,
-          title: "Margherita Pizza",
-          description:
-            "Classic pizza with San Marzano tomatoes, fresh mozzarella, and basil",
-          price: "₹750",
-          isVeg: true,
-        },
-        {
-          image: pizzaImg,
-          title: "Seafood Risotto",
-          description:
-            "Creamy risotto with prawns, mussels, and calamari in wine sauce",
-          price: "₹1,200",
-          isVeg: false,
-        },
-        {
-          image: pizzaImg,
-          title: "Osso Buco",
-          description: "Slow-braised veal shanks in rich tomato and wine sauce",
-          price: "₹1,450",
-          isVeg: false,
-        },
-      ],
-    },
-    {
-      title: "Desserts",
-      items: [
-        {
-          image: tiramisuImg,
-          title: "Tiramisu",
-          description:
-            "Classic Italian dessert with espresso-soaked ladyfingers & mascarpone",
-          price: "₹450",
-          isVeg: true,
-        },
-        {
-          image: tiramisuImg,
-          title: "Panna Cotta",
-          description: "Silky vanilla custard with berry compote",
-          price: "₹400",
-          isVeg: true,
-        },
-        {
-          image: tiramisuImg,
-          title: "Cannoli Siciliani",
-          description:
-            "Crispy pastry shells filled with sweet ricotta & chocolate chips",
-          price: "₹425",
-          isVeg: true,
-        },
-      ],
-    },
-    {
-      title: "Beverages",
-      items: [
-        {
-          image: bruschettaImg,
-          title: "Italian Espresso",
-          description: "Rich, bold espresso from premium Italian beans",
-          price: "₹200",
-          isVeg: true,
-        },
-        {
-          image: bruschettaImg,
-          title: "Fresh Lemonade",
-          description: "Homemade lemonade with mint and lime",
-          price: "₹250",
-          isVeg: true,
-        },
-        {
-          image: bruschettaImg,
-          title: "House Wine",
-          description: "Selection of premium Italian wines",
-          price: "₹800",
-          isVeg: true,
-        },
-      ],
-    },
-    {
-      title: "Chef's Specials",
-      items: [
-        {
-          image: pizzaImg,
-          title: "Truffle Pasta",
-          description:
-            "Handmade pasta with black truffle, parmesan, and butter sauce",
-          price: "₹1,650",
-          isVeg: true,
-        },
-        {
-          image: pizzaImg,
-          title: "Grilled Branzino",
-          description:
-            "Mediterranean sea bass grilled with herbs and lemon",
-          price: "₹1,800",
-          isVeg: false,
-        },
-      ],
-    },
-  ];
+  const [dishes, setDishes] = useState([]);
+  useEffect(() => {
+    api.get("/dishes").then((res) => {
+      setDishes(res.data);
+    });
+  }, []);
+
 
   // ------------------------------
   // FILTERING ENGINE
@@ -148,30 +24,25 @@ const Menu = () => {
 
   const categories = [
     "Show All",
-    "Starters",
-    "Main Course",
-    "Desserts",
-    "Beverages",
-    "Chef's Specials",
+    ...Array.from(new Set(dishes.map((d) => d.category)))
   ];
+
 
   const [activeCategory, setActiveCategory] = useState("Show All");
   const [searchQuery, setSearchQuery] = useState("");
   const [vegFilter, setVegFilter] = useState("All"); // All | Veg | NonVeg
+  const [sortOption, setSortOption] = useState("");
 
   // Flatten all items for "Show All"
-  const allItems = menuCategories.flatMap((cat) =>
-    cat.items.map((item) => ({
-      ...item,
-      category: cat.title,
-    }))
-  );
+  const allItems = dishes;
+
 
   // Filter by main category
   const categoryFilteredItems =
     activeCategory === "Show All"
       ? allItems
-      : menuCategories.find((cat) => cat.title === activeCategory)?.items || [];
+      : dishes.filter((d) => d.category === activeCategory);
+
 
   // Search filter
   const searchFilteredItems = categoryFilteredItems.filter((item) =>
@@ -180,10 +51,19 @@ const Menu = () => {
 
   // Veg / NonVeg filter
   const finalFilteredItems = searchFilteredItems.filter((item) => {
-    if (vegFilter === "Veg") return item.isVeg === true;
-    if (vegFilter === "NonVeg") return item.isVeg === false;
-    return true; // All
+    if (vegFilter === "Veg") return item.is_veg === 1;
+    if (vegFilter === "NonVeg") return item.is_veg === 0;
+    return true;
   });
+  <select
+    className="border p-2 rounded-md"
+    onChange={(e) => setSortOption(e.target.value)}
+  >
+    <option value="">Sort</option>
+    <option value="LowToHigh">Price: Low → High</option>
+    <option value="HighToLow">Price: High → Low</option>
+  </select>
+
 
   return (
     <div className="min-h-screen">
@@ -277,7 +157,14 @@ const Menu = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
           {finalFilteredItems.map((item, idx) => (
-            <MenuCard key={idx} {...item} />
+            <MenuCard
+              key={item.id}
+              title={item.title}
+              description={item.description}
+              price={item.price}
+              image={item.image_url}
+              isVeg={item.is_veg === 1}
+            />
           ))}
         </div>
       </section>

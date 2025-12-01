@@ -11,6 +11,10 @@ import Menu from "./pages/Menu";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Aboutus from "./pages/Aboutus";
+import AdminLogin from "./pages/admin/adminlogin";
+import AdminDashboard from "./pages/admin/admindashboard";
+import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
+
 
 const queryClient = new QueryClient();
 
@@ -23,8 +27,10 @@ const AnimatedRoutes = () => {
         <Route path="/" element={<PageTransition><Home /></PageTransition>} />
         <Route path="/menu" element={<PageTransition><Menu /></PageTransition>} />
         <Route path="/contact" element={<PageTransition><Contact /></PageTransition>} />
-        <Route path="/aboutus"element={<PageTransition><Aboutus /></PageTransition>}/>
+        <Route path="/aboutus" element={<PageTransition><Aboutus /></PageTransition>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="/secret-admin-login" element={<PageTransition><AdminLogin /></PageTransition>} />
+        <Route path="/admin" element={<ProtectedAdminRoute><PageTransition><AdminDashboard /></PageTransition></ProtectedAdminRoute>} />
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
