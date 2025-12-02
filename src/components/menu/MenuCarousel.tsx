@@ -5,9 +5,9 @@ import {
   CarouselItem,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
-import bruschettaImg from "@/assets/bruschetta.jpg";
-import pizzaImg from "@/assets/pizza.jpg";
-import tiramisuImg from "@/assets/tiramisu.jpg";
+import bruschettaImg from "@/assets/images/bruschetta.jpg";
+import pizzaImg from "@/assets/images/pizza.jpg";
+import tiramisuImg from "@/assets/images/tiramisu.jpg";
 
 const MenuCarousel = () => {
   const images = [bruschettaImg, pizzaImg, tiramisuImg];

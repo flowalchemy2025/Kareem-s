@@ -2,17 +2,17 @@
 import React, { useEffect, useRef, useState } from "react";
 
 // import your assets (adjust paths/names if different)
-import hero1Large from "@/assets/hero-bg.jpg";
-import hero1Md from "@/assets/hero-bg@md.jpg";
-import hero1Sm from "@/assets/hero-bg@sm.jpg";
+import hero1Large from "@/assets/images/hero-bg.jpg";
+import hero1Md from "@/assets/images/hero-bg@md.jpg";
+import hero1Sm from "@/assets/images/hero-bg@sm.jpg";
 
-import hero2Large from "@/assets/hero-2.jpg";
-import hero2Md from "@/assets/hero-2@md.jpg";
-import hero2Sm from "@/assets/hero-2@sm.jpg";
+import hero2Large from "@/assets/images/hero-2.jpg";
+import hero2Md from "@/assets/images/hero-2@md.jpg";
+import hero2Sm from "@/assets/images/hero-2@sm.jpg";
 
-import hero3Large from "@/assets/hero-3.jpg";
-import hero3Md from "@/assets/hero-3@md.jpg";
-import hero3Sm from "@/assets/hero-3@sm.jpg";
+import hero3Large from "@/assets/images/hero-3.jpg";
+import hero3Md from "@/assets/images/hero-3@md.jpg";
+import hero3Sm from "@/assets/images/hero-3@sm.jpg";
 
 const IMAGES = [
   {

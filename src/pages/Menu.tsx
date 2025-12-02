@@ -2,9 +2,9 @@ import { Button } from "@/components/ui/button";
 import MenuCard from "@/components/menu/MenuCard";
 import { ExternalLink, Download } from "lucide-react";
 import MenuCarousel from "@/components/menu/MenuCarousel";
-import bruschettaImg from "@/assets/bruschetta.jpg";
-import pizzaImg from "@/assets/pizza.jpg";
-import tiramisuImg from "@/assets/tiramisu.jpg";
+import bruschettaImg from "@/assets/images/bruschetta.jpg";
+import pizzaImg from "@/assets/images/pizza.jpg";
+import tiramisuImg from "@/assets/images/tiramisu.jpg";
 import { useState } from "react";
 import { api } from "@/lib/api"; // this connects axios to backend
 import { useEffect } from "react";

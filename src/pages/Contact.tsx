@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MapPin, Phone, Mail, Clock, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import tiramisuImg from "@/assets/tiramisu.jpg";
+import tiramisuImg from "@/assets/images/tiramisu.jpg";
 
 const Contact = () => {
   const [formData, setFormData] = useState({

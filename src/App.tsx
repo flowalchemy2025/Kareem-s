@@ -10,9 +10,9 @@ import Home from "./pages/Home";
 import Menu from "./pages/Menu";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
-import Aboutus from "./pages/Aboutus";
-import AdminLogin from "./pages/admin/adminlogin";
-import AdminDashboard from "./pages/admin/admindashboard";
+import Aboutus from "./pages/AboutUs";
+import AdminLogin from "./pages/admin/AdminLogin";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 import ProtectedAdminRoute from "./components/admin/ProtectedAdminRoute";
 
 

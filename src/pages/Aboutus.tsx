@@ -1,5 +1,5 @@
 import { ChefHat, Heart, Flame } from "lucide-react";
-import storyImg from "@/assets/hero-bg.jpg"; // Replace with your own image if needed
+import storyImg from "@/assets/images/hero-bg.jpg"; // Replace with your own image if needed
 
 const Aboutus = () => {
   return (
@@ -24,44 +24,44 @@ const Aboutus = () => {
         </div>
       </section>
 
-     {/* Intro Section — After About Us Hero */}
-<section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
-  <div className="max-w-3xl mx-auto text-center space-y-6">
-    <h2 className="font-display text-4xl font-bold text-foreground">
-      No connection with "KARIM'S",
-    </h2>
-    <p>Jama Masjid, Delhi</p>
-  </div>
+      {/* Intro Section — After About Us Hero */}
+      <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="max-w-3xl mx-auto text-center space-y-6">
+          <h2 className="font-display text-4xl font-bold text-foreground">
+            No connection with "KARIM'S",
+          </h2>
+          <p>Jama Masjid, Delhi</p>
+        </div>
 
-  {/* Divider Line */}
-  <div className="mt-12 flex justify-center">
-    <div className="w-24 h-1 bg-accent rounded-full"></div>
-  </div>
-</section>
+        {/* Divider Line */}
+        <div className="mt-12 flex justify-center">
+          <div className="w-24 h-1 bg-accent rounded-full"></div>
+        </div>
+      </section>
 
 
       {/* Our Story */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          
+
           <div className="space-y-6">
             <h2 className="font-display text-4xl font-bold text-foreground">
               Our Story
             </h2>
             <p className="text-muted-foreground leading-relaxed">
               Since 1995 Kareem's has pampered Mumbai's discerning taste buds with their
-               unique masterpieces of Indian cuisine, and has taken wing to conquer rest 
-               of the world. We insist on purity of every ingredient and take meticulous
-                careat every stage of preparation no make every dish a gourmet's delight.
+              unique masterpieces of Indian cuisine, and has taken wing to conquer rest
+              of the world. We insist on purity of every ingredient and take meticulous
+              careat every stage of preparation no make every dish a gourmet's delight.
             </p>
             <p className="text-muted-foreground leading-relaxed">
-             We understand that no two plates are alike and so our service are customized to match individual needs and preferences. 
-             That fusion of traditional tastes with contemporary trends has ensured that our menu meets wide acceptance across age, gender and ethnicity.
+              We understand that no two plates are alike and so our service are customized to match individual needs and preferences.
+              That fusion of traditional tastes with contemporary trends has ensured that our menu meets wide acceptance across age, gender and ethnicity.
             </p>
 
             <p className="text-muted-foreground leading-relaxed">
-                We welcome you to treat your taste buds and the rest of your senses with the fusion of the finest cuisine, 
-                comfortable ambience and courteous service at Kareem's.
+              We welcome you to treat your taste buds and the rest of your senses with the fusion of the finest cuisine,
+              comfortable ambience and courteous service at Kareem's.
             </p>
           </div>
 

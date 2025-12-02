@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { ThemeContext } from "../ThemeContext";
+import { ThemeContext } from "../../context/ThemeContext";
 import { motion } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
 

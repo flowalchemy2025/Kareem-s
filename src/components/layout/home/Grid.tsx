@@ -8,10 +8,10 @@ import React from "react";
  * - text-foreground & text-muted-foreground
  * - consistent spacing & weights
  */
-import locImg from "@/assets/hero-bg.jpg";
-import menuImg from "@/assets/hero-2.jpg";
-import whatsNewImg from "@/assets/hero-3.jpg";
-import deliverImg from "@/assets/hero-4.jpg";
+import locImg from "@/assets/images/hero-bg.jpg";
+import menuImg from "@/assets/images/hero-2.jpg";
+import whatsNewImg from "@/assets/images/hero-3.jpg";
+import deliverImg from "@/assets/images/hero-4.jpg";
 
 const ITEMS = [
   {
