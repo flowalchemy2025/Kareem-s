@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { ChefHat, Clock, MapPin } from "lucide-react";
 import HeroCarousel from "@/components/layout/home/HeroCarousel";
 import Grid from "@/components/layout/home/Grid";  // <- make sure this path matches your file
+import Chatbot from "@/components/Chatbot";
 
 const Home = () => {
   return (
