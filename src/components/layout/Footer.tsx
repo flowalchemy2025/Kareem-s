@@ -70,7 +70,7 @@ const Footer = () => {
             <h4 className="font-semibold text-lg">Follow Us</h4>
             <div className="flex space-x-4">
               <a
-                href="https://www.instagram.com/kareemssadar?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+                href="https://www.instagram.com/kareemssadar/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-accent transition-colors"
@@ -79,7 +79,7 @@ const Footer = () => {
                 <Instagram size={20} />
               </a>
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/kareemssadar/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-accent transition-colors"
@@ -99,8 +99,8 @@ const Footer = () => {
             </div>
             <div className="text-sm text-background/80 space-y-1">
               <p className="font-medium text-background">Opening Hours</p>
-              <p>Mon - Fri: 12:00 PM - 11:00 PM</p>
-              <p>Sat - Sun: 11:00 AM - 11:30 PM</p>
+              <p>Daily Afternoon: 12:00 PM – 4:00 PM</p>
+              <p>Daily Evening: 7:00 PM – 11:30 PM</p>
             </div>
           </div>
         </div>

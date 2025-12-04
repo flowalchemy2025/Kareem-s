@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { MessageCircle, X, Send, Paperclip, Check, CheckCheck } from "lucide-react";
+import { MessageCircle, X, Send, Trash2, Check, CheckCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -95,15 +95,21 @@ const MessageBubble = ({ message }: { message: Message }) => {
   );
 };
 
+const fabMessages = [
+  "Book a Table Now",
+  "Chat with Us",
+  "Explore New"
+];
+
 const ChatBot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [fabMessageIndex, setFabMessageIndex] = useState(0);
+  const [prevFabIndex, setPrevFabIndex] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load chat history from localStorage
   useEffect(() => {
@@ -129,8 +135,9 @@ const ChatBot = () => {
       ]);
     }
 
+    // Only auto-open if saved state explicitly true (prevents auto-open bug)
     const wasMinimized = localStorage.getItem(MINIMIZED_KEY);
-    if (wasMinimized === "false") {
+    if (wasMinimized === "true") {
       setIsOpen(true);
     }
   }, []);
@@ -154,6 +161,15 @@ const ChatBot = () => {
     localStorage.setItem(MINIMIZED_KEY, String(isOpen));
   }, [isOpen]);
 
+  // Cycle FAB messages (only updates index; animation handled separately)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPrevFabIndex(fabMessageIndex);
+      setFabMessageIndex((prev) => (prev + 1) % fabMessages.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, [fabMessageIndex]);
+
   const addMessage = (message: Omit<Message, "id" | "timestamp">) => {
     const newMessage: Message = {
       ...message,
@@ -168,17 +184,15 @@ const ChatBot = () => {
   };
 
   const handleSend = () => {
-    if (!inputValue.trim() && !selectedImage) return;
+    if (!inputValue.trim()) return;
 
     const userMessage = addMessage({
       type: "user",
-      content: inputValue || "Sent an image",
+      content: inputValue,
       status: "sent",
-      image: selectedImage || undefined,
     });
 
     setInputValue("");
-    setSelectedImage(null);
 
     // Simulate message status updates
     setTimeout(() => {
@@ -252,15 +266,27 @@ const ChatBot = () => {
     return responses[id];
   };
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setSelectedImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+  // CLEAR CHAT - confirmed by user
+  const handleClearChat = () => {
+    const confirmed = window.confirm("Clear chat history and start a new conversation?");
+    if (!confirmed) return;
+
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {
+      // ignore
     }
+
+    // reset messages to welcome
+    setMessages([
+      {
+        id: "welcome",
+        type: "bot",
+        content: "Welcome to Kareem's! 👋 I'm your restaurant assistant. How can I help you today?",
+        timestamp: new Date(),
+        status: "read",
+      },
+    ]);
   };
 
   return (
@@ -269,15 +295,51 @@ const ChatBot = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
-          "fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-elegant transition-all duration-300",
-          "bg-primary hover:bg-primary/90 text-primary-foreground",
-          "flex items-center justify-center",
-          "hover:scale-110 active:scale-95",
-          isOpen && "rotate-90"
+          "fixed bottom-6 right-6 z-50 shadow-elegant transition-all duration-500 group",
+          "bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70",
+          "text-primary-foreground",
+          "flex items-center justify-center gap-3 overflow-hidden",
+          "hover:scale-105 active:scale-95",
+          isOpen ? "w-14 h-14 rounded-full" : "h-14 px-6 rounded-full"
         )}
         aria-label="Toggle chat"
       >
-        {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
+        {isOpen ? (
+          <X className="w-6 h-6" />
+        ) : (
+          <>
+            <MessageCircle className="w-5 h-5 shrink-0 animate-pulse" />
+
+            {/* Smooth cycling label container */}
+            <span className="relative inline-block h-5 w-[120px] select-none overflow-hidden">
+              {/* Previous message (fades up) */}
+              {prevFabIndex !== null && (
+                <span
+                  key={`prev-${prevFabIndex}`}
+                  className="absolute left-0 top-0 w-full text-sm font-medium transform transition-[opacity,translate] duration-600 ease-out"
+                  style={{
+                    opacity: 0,
+                    transform: 'translateY(-6px)'
+                  }}
+                >
+                  {fabMessages[prevFabIndex]}
+                </span>
+              )}
+
+              {/* Current message (slides in from below) */}
+              <span
+                key={fabMessageIndex}
+                className="absolute left-0 top-0 w-full text-sm font-medium transform transition-[opacity,translate] duration-600 ease-out"
+                style={{
+                  opacity: 1,
+                  transform: 'translateY(0)'
+                }}
+              >
+                {fabMessages[fabMessageIndex]}
+              </span>
+            </span>
+          </>
+        )}
       </button>
 
       {/* Chat Window */}
@@ -295,36 +357,33 @@ const ChatBot = () => {
         style={{ aspectRatio: "9/16" }}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-primary to-primary/80 text-primary-foreground p-4 flex items-center justify-between">
+        <div className="bg-gradient-to-r from-[#8B4513] to-[#A0522D] p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center font-serif font-bold">
+            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-serif font-bold text-lg text-white">
               K
             </div>
             <div>
-              <h3 className="font-semibold">Kareem's Assistant</h3>
-              <p className="text-xs opacity-90">Online • Typically replies instantly</p>
+              <h3 className="font-semibold text-white">Kareem's Assistant</h3>
+              <p className="text-xs text-white/80">Online • Typically replies instantly</p>
             </div>
           </div>
-        </div>
 
-        {/* Quick Actions Bar */}
-        <div className="bg-secondary/50 p-3 border-b border-border">
-          <div className="flex gap-2 flex-wrap">
-            {quickReplies.map((reply) => (
-              <button
-                key={reply.id}
-                onClick={() => handleQuickReply(reply.id)}
-                className="px-3 py-1.5 bg-background hover:bg-muted rounded-full text-xs font-medium transition-colors shadow-sm border border-border/50 flex items-center gap-1.5"
-              >
-                <span>{reply.icon}</span>
-                <span>{reply.label}</span>
-              </button>
-            ))}
+          {/* Clear Chat button added here (minimal, matches style) */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleClearChat}
+              aria-label="Clear chat"
+              title="Clear chat"
+              className="inline-flex items-center gap-2 rounded-md px-2 py-1 text-sm hover:bg-background/50 text-white/90"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span className="hidden sm:inline">Clear</span>
+            </button>
           </div>
         </div>
 
         {/* Messages */}
-        <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+        <ScrollArea className="flex-1 p-4 bg-gradient-to-b from-background to-secondary/20" ref={scrollRef}>
           <div>
             {messages.map((message) => (
               <MessageBubble key={message.id} message={message} />
@@ -342,58 +401,55 @@ const ChatBot = () => {
           </div>
         </ScrollArea>
 
-        {/* Image Preview */}
-        {selectedImage && (
-          <div className="px-4 pb-2">
-            <div className="relative inline-block">
-              <img src={selectedImage} alt="Preview" className="h-20 rounded-lg" />
-              <button
-                onClick={() => setSelectedImage(null)}
-                className="absolute -top-2 -right-2 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center"
-              >
-                <X className="w-4 h-4" />
-              </button>
+        {/* Input Bar with Quick Actions */}
+        <div className="border-t border-border bg-background safe-bottom">
+          {/* Quick Actions Bar - Now at Bottom */}
+          <div className="p-3 border-b border-border/50">
+            <div className="flex gap-2 flex-wrap justify-center">
+              {quickReplies.map((reply) => (
+                <button
+                  key={reply.id}
+                  onClick={() => handleQuickReply(reply.id)}
+                  className="px-4 py-2 bg-gradient-to-r from-primary/10 to-primary/5 hover:from-primary/20 hover:to-primary/10 rounded-full text-xs font-medium transition-all duration-300 shadow-sm border border-primary/20 flex items-center gap-2 hover:scale-105 active:scale-95"
+                >
+                  <span className="text-base">{reply.icon}</span>
+                  <span className="text-[#8B4513]">{reply.label}</span>
+                </button>
+              ))}
             </div>
           </div>
-        )}
 
-        {/* Input Bar */}
-        <div className="p-4 border-t border-border bg-background safe-bottom">
-          <div className="flex items-end gap-2">
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleImageSelect}
-              accept="image/*"
-              className="hidden"
-            />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => fileInputRef.current?.click()}
-              className="shrink-0"
-            >
-              <Paperclip className="w-5 h-5" />
-            </Button>
-            <Input
-              ref={inputRef}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-              placeholder="Type a message..."
-              className="flex-1 resize-none"
-            />
-            <Button
-              onClick={handleSend}
-              size="icon"
-              className="shrink-0 bg-primary hover:bg-primary/90"
-              disabled={!inputValue.trim() && !selectedImage}
-            >
-              <Send className="w-5 h-5" />
-            </Button>
+          {/* Input Controls */}
+          <div className="p-4">
+            <div className="flex items-end gap-2">
+              <Input
+                ref={inputRef}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
+                placeholder="Type a message..."
+                className="flex-1 resize-none bg-secondary/30 border-primary/20 focus:border-primary/40 text-[#D2B48C] placeholder:text-[#D2B48C]/60"
+              />
+              <Button
+                onClick={handleSend}
+                size="icon"
+                className="shrink-0 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 active:scale-95"
+                disabled={!inputValue.trim()}
+              >
+                <Send className="w-5 h-5" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Small inline styles for smooth enter/exit animation */}
+      <style>{`
+        .duration-600 { transition-duration: 600ms; }
+        .transition-\\[opacity,translate\\] { transition-property: opacity, transform; }
+        .w-\\[120px\\] { width: 120px; }
+        .h-5 { height: 1.25rem; }
+      `}</style>
     </>
   );
 };

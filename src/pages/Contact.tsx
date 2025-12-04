@@ -96,8 +96,9 @@ const Contact = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <p className="text-muted-foreground">Monday - Friday: 12:00 PM - 11:00 PM</p>
-                <p className="text-muted-foreground">Saturday - Sunday: 11:00 AM - 11:30 PM</p>
+           <p className="text-muted-foreground">Daily Afternoon: 12:00 PM – 4:00 PM</p>
+           <p className="text-muted-foreground">Daily Evening: 7:00 PM – 11:30 PM</p>
+
               </CardContent>
             </Card>
 
