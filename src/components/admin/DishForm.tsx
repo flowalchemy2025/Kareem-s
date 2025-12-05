@@ -1,111 +1,132 @@
-import { useState, useEffect } from "react";
-import ImageUploader from "./ImageUploader";
+import React, { useEffect, useState } from "react";
 import { addDish, editDish } from "@/lib/api";
 import { DishType } from "@/types/DishType";
-import { MENU_CATEGORIES } from "@/constants/menuCategories";
 
 interface DishFormProps {
     mode: "create" | "edit";
     existingDish?: DishType;
+    rowNumber?: number;
 }
 
-const DishForm = ({ mode, existingDish }: DishFormProps) => {
-    const [name, setname] = useState("");
+export default function DishForm({ mode, existingDish, rowNumber }: DishFormProps) {
+    const [name, setName] = useState("");
     const [price, setPrice] = useState("");
     const [category, setCategory] = useState("");
+    const [dishType, setDishType] = useState<"Veg" | "Non-Veg">("Veg");
     const [description, setDescription] = useState("");
     const [imageUrl, setImageUrl] = useState("");
-    const [dishType, setDishType] = useState<"Veg" | "NonVeg">("Veg");
-    const [rowNumber, setRowNumber] = useState<number | null>(null);
 
-    // Prefill in edit mode
+    // -----------------------------------------------
+    // PREFILL DATA WHEN EDITING
+    // -----------------------------------------------
     useEffect(() => {
         if (existingDish) {
-            setname(existingDish.name || "");
+            setName(existingDish.name || "");
             setPrice(existingDish.price || "");
             setCategory(existingDish.category || "");
+            setDishType(existingDish.is_veg === 1 ? "Veg" : "Non-Veg");
             setDescription(existingDish.description || "");
             setImageUrl(existingDish.image || "");
-            setDishType(existingDish.is_veg === 1 ? "Veg" : "NonVeg");
-            setRowNumber(existingDish.rowNumber ?? null);
         }
     }, [existingDish]);
 
+    // -----------------------------------------------
+    // IMAGE UPLOAD HANDLER
+    // -----------------------------------------------
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Example: Cloudinary upload handler
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImageUrl(reader.result as string); // TEMP preview
+        };
+        reader.readAsDataURL(file);
+    };
+
+    // -----------------------------------------------
+    // SUBMIT HANDLER
+    // -----------------------------------------------
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const payload = {
+        const id = existingDish?.id ?? Date.now().toString(); // auto-generate id
+
+        const payload: DishType = {
+            id,
             name,
-            description,
             price,
             category,
-            image_url: imageUrl,
             is_veg: dishType === "Veg" ? 1 : 0,
+            description,
+            image: imageUrl,
         };
 
-        if (mode === "create") {
-            await addDish(payload);
-            alert("Dish added successfully");
-        } else {
-            if (!rowNumber) {
-                alert("Row number missing for edit");
-                return;
+        try {
+            if (mode === "create") {
+                await addDish(payload);
+                alert("Dish added successfully!");
+            } else {
+                if (!rowNumber) {
+                    alert("Row number missing!");
+                    return;
+                }
+                await editDish(rowNumber, payload);
+                alert("Dish updated successfully!");
             }
-            await editDish(rowNumber, payload);
-            alert("Dish updated successfully");
+        } catch (err) {
+            console.error("FULL ERROR DETAILS:", err);
+            alert("Something went wrong. Check console.");
         }
     };
 
     return (
-        <form
-            onSubmit={handleSubmit}
-            className="w-full max-w-md mx-auto p-6 bg-white rounded-xl shadow space-y-4"
-        >
-            <h2 className="text-xl font-bold">
+        <form className="flex flex-col gap-4 p-6 bg-white rounded-xl shadow-md" onSubmit={handleSubmit}>
+            <h2 className="text-xl font-semibold">
                 {mode === "create" ? "Add New Dish" : "Edit Dish"}
             </h2>
 
-            {/* Title */}
+            {/* Name */}
             <input
-                className="w-full p-3 border rounded"
+                type="text"
                 placeholder="Dish Name"
+                className="border rounded p-3"
                 value={name}
-                onChange={(e) => setname(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
                 required
             />
 
             {/* Price */}
             <input
-                className="w-full p-3 border rounded"
+                type="text"
                 placeholder="Price"
-                type="number"
+                className="border rounded p-3"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
                 required
             />
 
-            {/* Category DROPDOWN */}
+            {/* Category Dropdown */}
             <select
-                className="w-full p-3 border rounded"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
+                className="border rounded p-3"
                 required
             >
                 <option value="">Select Category</option>
-                {MENU_CATEGORIES.map((cat) => (
-                    <option key={cat} value={cat}>
-                        {cat}
-                    </option>
-                ))}
+                <option value="Starter">Starter</option>
+                <option value="Main Course">Main Course</option>
+                <option value="Beverages">Beverages</option>
+                <option value="Desserts">Desserts</option>
             </select>
 
-            {/* Veg / NonVeg TOGGLE */}
+            {/* Veg / Non-Veg Toggle */}
             <div className="flex gap-4">
                 <label className="flex items-center gap-2">
                     <input
                         type="radio"
-                        name="dishType"
-                        value="Veg"
+                        name="vegType"
                         checked={dishType === "Veg"}
                         onChange={() => setDishType("Veg")}
                     />
@@ -115,10 +136,9 @@ const DishForm = ({ mode, existingDish }: DishFormProps) => {
                 <label className="flex items-center gap-2">
                     <input
                         type="radio"
-                        name="dishType"
-                        value="NonVeg"
-                        checked={dishType === "NonVeg"}
-                        onChange={() => setDishType("NonVeg")}
+                        name="vegType"
+                        checked={dishType === "Non-Veg"}
+                        onChange={() => setDishType("Non-Veg")}
                     />
                     Non-Veg
                 </label>
@@ -126,28 +146,23 @@ const DishForm = ({ mode, existingDish }: DishFormProps) => {
 
             {/* Description */}
             <textarea
-                className="w-full p-3 border rounded"
                 placeholder="Description"
+                className="border rounded p-3"
+                rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
             />
 
-            {/* Image uploader */}
-            <ImageUploader onUpload={(url) => setImageUrl(url)} />
-
+            {/* Image Upload */}
+            <input type="file" accept="image/*" onChange={handleImageChange} />
             {imageUrl && (
-                <img
-                    src={imageUrl}
-                    alt="Dish"
-                    className="mt-3 w-24 h-24 rounded object-cover"
-                />
+                <img src={imageUrl} alt="Preview" className="w-24 h-24 object-cover rounded-md" />
             )}
 
-            <button className="w-full bg-green-600 text-white p-3 rounded font-semibold">
-                {mode === "create" ? "Save Dish" : "Update Dish"}
+            {/* Submit Button */}
+            <button type="submit" className="bg-green-600 text-white p-3 rounded-lg">
+                {mode === "create" ? "Add Dish" : "Update Dish"}
             </button>
         </form>
     );
-};
-
-export default DishForm;
+}

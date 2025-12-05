@@ -1,119 +1,121 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { getAllDishes, deleteDish } from "@/lib/api";
+import React, { useEffect, useState } from "react";
 import { DishType } from "@/types/DishType";
-import ProtectedAdminRoute from "@/components/admin/ProtectedAdminRoute";
+import { getAllDishes, deleteDish } from "@/lib/api";
+import { useNavigate } from "react-router-dom";
+import AdminLayout from "@/components/admin/AdminLayout";
 
-const ManageDishes = () => {
+export default function ManageDishes() {
     const [dishes, setDishes] = useState<DishType[]>([]);
+    const navigate = useNavigate();
 
-    // 1. Fetch dishes from backend (Google Sheets)
-    const fetchDishes = async () => {
+    // -------------------------------------------------------
+    // FETCH DISHES ON LOAD
+    // -------------------------------------------------------
+    const loadDishes = async () => {
         try {
-            const res = await getAllDishes();
-            const data = res.data as DishType[] | undefined;
-
-            if (!Array.isArray(data)) {
-                setDishes([]);
-                return;
-            }
-
-            // 2. Attach rowNumber (Google Sheets row index) in a typesafe way
-            const mapped: DishType[] = data.map((dish, index) => ({
-                ...dish,
-                rowNumber: index + 2, // because data starts from row 2 in Sheets
-            }));
-
-            setDishes(mapped);
-        } catch (error) {
-            console.error("Error fetching dishes:", error);
-        }
-    };
-
-    // 3. Delete handler
-    const handleDelete = async (rowNumber: number | undefined) => {
-        if (!rowNumber) return;
-
-        try {
-            await deleteDish(rowNumber);
-            await fetchDishes();
-        } catch (error) {
-            console.error("Error deleting dish:", error);
+            const data = await getAllDishes();
+            setDishes(data);
+        } catch (err) {
+            console.error("Error loading dishes:", err);
         }
     };
 
     useEffect(() => {
-        fetchDishes();
+        loadDishes();
     }, []);
 
-    return (
-        <ProtectedAdminRoute>
-            <div className="p-6">
-                <h1 className="text-2xl font-bold mb-4">Manage Dishes</h1>
+    // -------------------------------------------------------
+    // DELETE DISH HANDLER
+    // -------------------------------------------------------
+    const handleDelete = async (rowNumber: number | undefined) => {
+        if (!rowNumber) return alert("Invalid row number");
 
-                <table className="w-full border">
-                    <thead>
-                        <tr className="bg-gray-200">
-                            <th className="p-2 border">Name</th>
-                            <th className="p-2 border">Price</th>
-                            <th className="p-2 border">Category</th>
-                            <th className="p-2 border">Actions</th>
+        if (!confirm("Are you sure you want to delete this dish?")) return;
+
+        try {
+            await deleteDish(rowNumber);
+            alert("Dish deleted successfully!");
+            loadDishes();
+        } catch (err) {
+            console.error("Error deleting dish:", err);
+            alert("Failed to delete dish");
+        }
+    };
+
+    return (
+        <AdminLayout>
+            <h2 className="text-2xl font-bold mb-6">Manage Dishes</h2>
+
+            <div className="overflow-x-auto w-full">
+                <table className="w-full border-collapse bg-white shadow rounded-lg overflow-hidden">
+                    <thead className="bg-gray-100 text-left">
+                        <tr>
+                            <th className="p-3 border">Image</th>
+                            <th className="p-3 border">Name</th>
+                            <th className="p-3 border">Category</th>
+                            <th className="p-3 border">Price</th>
+                            <th className="p-3 border">Type</th>
+                            <th className="p-3 border">Actions</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         {dishes.map((dish) => (
-                            <tr key={dish.rowNumber}>
-                                <td className="p-2 border">{dish.name}</td>
-                                <td className="p-2 border">{dish.price}</td>
-                                <td className="p-2 border">{dish.category}</td>
+                            <tr key={dish.id} className="border-b hover:bg-gray-50">
+                                <td className="p-3 border">
+                                    {dish.image ? (
+                                        <img
+                                            src={dish.image}
+                                            alt={dish.name}
+                                            className="w-16 h-16 rounded object-cover"
+                                        />
+                                    ) : (
+                                        <span className="text-gray-400">No Image</span>
+                                    )}
+                                </td>
 
-                                <td className="p-2 border">
-                                    {/* Edit link passes data via query params */}
-                                    <Link
-                                        to={`/admin/edit?name=${encodeURIComponent(
-                                            dish.name
-                                        )}&price=${encodeURIComponent(
-                                            dish.price
-                                        )}&category=${encodeURIComponent(
-                                            dish.category
-                                        )}&description=${encodeURIComponent(
-                                            dish.description ?? ""
-                                        )}&image=${encodeURIComponent(
-                                            dish.image ?? ""
-                                        )}&rowNumber=${dish.rowNumber}`}
-                                        className="text-blue-600 mr-4 cursor-pointer"
+                                <td className="p-3 border font-medium">{dish.name}</td>
+                                <td className="p-3 border">{dish.category}</td>
+                                <td className="p-3 border">₹{dish.price}</td>
+
+                                <td className="p-3 border">
+                                    {dish.is_veg === 1 ? (
+                                        <span className="text-green-600 font-semibold">Veg</span>
+                                    ) : (
+                                        <span className="text-red-600 font-semibold">Non-Veg</span>
+                                    )}
+                                </td>
+
+                                <td className="p-3 border flex gap-3">
+                                    <button
+                                        className="bg-blue-600 text-white px-3 py-1 rounded"
+                                        onClick={() =>
+                                            navigate(`/admin/edit?rowNumber=${dish.rowNumber}`, {
+                                                state: { dish },
+                                            })
+                                        }
                                     >
                                         Edit
-                                    </Link>
+                                    </button>
 
-                                    {/* Delete action */}
                                     <button
-                                        type="button"
+                                        className="bg-red-600 text-white px-3 py-1 rounded"
                                         onClick={() => handleDelete(dish.rowNumber)}
-                                        className="text-red-600 cursor-pointer"
                                     >
                                         Delete
                                     </button>
                                 </td>
                             </tr>
                         ))}
-
-                        {dishes.length === 0 && (
-                            <tr>
-                                <td
-                                    colSpan={4}
-                                    className="p-4 border text-center text-gray-500"
-                                >
-                                    No dishes found.
-                                </td>
-                            </tr>
-                        )}
                     </tbody>
                 </table>
-            </div>
-        </ProtectedAdminRoute>
-    );
-};
 
-export default ManageDishes;
+                {dishes.length === 0 && (
+                    <p className="text-center text-gray-500 mt-6">
+                        No dishes available. Add some first!
+                    </p>
+                )}
+            </div>
+        </AdminLayout>
+    );
+}

@@ -55,10 +55,9 @@ const Contact = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-muted-foreground">
-                  Ground Floor, Aman Lifestyle,<br />
-                  Nelson Square, Rajnagar,<br />
-                  Near Sadar, Chaoni, Nagpur<br />
-                  India
+                  Aman's Lifestyle, Nelson Square,<br />
+                  Pagalkhana Chowk, Koradi Road,<br />
+                  Nagpur-13<br />
                 </p>
               </CardContent>
             </Card>
@@ -72,7 +71,7 @@ const Contact = () => {
               </CardHeader>
               <CardContent className="space-y-2">
                 <p className="text-muted-foreground">Primary: +91 96376 99199</p>
-                <p className="text-muted-foreground">Alternate: +91 96376 99199</p>
+                <p className="text-muted-foreground">Alternate: +91 07066 419199</p>
               </CardContent>
             </Card>
 
@@ -84,7 +83,7 @@ const Contact = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">kareems.nagpur@gmail.com</p>
+                <p className="text-muted-foreground">kareems.ngp@gmail.com</p>
               </CardContent>
             </Card>
 
@@ -96,8 +95,8 @@ const Contact = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-           <p className="text-muted-foreground">Daily Afternoon: 12:00 PM – 4:00 PM</p>
-           <p className="text-muted-foreground">Daily Evening: 7:00 PM – 11:30 PM</p>
+                <p className="text-muted-foreground">Daily Afternoon: 12:00 PM – 03:30 PM</p>
+                <p className="text-muted-foreground">Daily Evening: 7:00 PM – 11:30 PM</p>
 
               </CardContent>
             </Card>

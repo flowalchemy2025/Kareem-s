@@ -8,9 +8,16 @@ import {
 
 const router = express.Router();
 
+// GET all dishes
 router.get("/", fetchDishes);
-router.post("/add", createDish);
-router.put("/edit", editDish);
-router.delete("/delete/:rowNumber", removeDish);
+
+// ADD a dish
+router.post("/", createDish);
+
+// EDIT a dish — requires rowNumber
+router.put("/:rowNumber", editDish);
+
+// DELETE a dish — requires rowNumber
+router.delete("/:rowNumber", removeDish);
 
 export default router;

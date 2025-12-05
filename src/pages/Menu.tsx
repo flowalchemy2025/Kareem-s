@@ -2,68 +2,56 @@ import { Button } from "@/components/ui/button";
 import MenuCard from "@/components/menu/MenuCard";
 import { ExternalLink, Download } from "lucide-react";
 import MenuCarousel from "@/components/menu/MenuCarousel";
-import bruschettaImg from "@/assets/images/bruschetta.jpg";
-import pizzaImg from "@/assets/images/pizza.jpg";
-import tiramisuImg from "@/assets/images/tiramisu.jpg";
-import { useState } from "react";
-import { api } from "@/lib/api"; // this connects axios to backend
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
+import { getAllDishes } from "@/lib/api";
+import { MENU_CATEGORIES } from "@/constants/menuCategories";
+import { DishType } from "@/types/DishType";
 
 const Menu = () => {
-  const [dishes, setDishes] = useState([]);
-  useEffect(() => {
-    api.get("/dishes").then((res) => {
-      setDishes(res.data);
-    });
-  }, []);
-
-
-  // ------------------------------
-  // FILTERING ENGINE
-  // ------------------------------
-
-  const categories = [
-    "Show All",
-    ...Array.from(new Set(dishes.map((d) => d.category)))
-  ];
-
-
+  const [dishes, setDishes] = useState<DishType[]>([]);
   const [activeCategory, setActiveCategory] = useState("Show All");
   const [searchQuery, setSearchQuery] = useState("");
   const [vegFilter, setVegFilter] = useState("All"); // All | Veg | NonVeg
   const [sortOption, setSortOption] = useState("");
 
-  // Flatten all items for "Show All"
-  const allItems = dishes;
+  useEffect(() => {
+    getAllDishes().then((data) => setDishes(data));
+  }, []);
 
+  const categories = ["Show All", ...MENU_CATEGORIES];
 
-  // Filter by main category
-  const categoryFilteredItems =
+  // ------------------------------
+  // FILTERING ENGINE
+  // ------------------------------
+
+  // Filter by category
+  const categoryFiltered =
     activeCategory === "Show All"
-      ? allItems
-      : dishes.filter((d) => d.category === activeCategory);
-
+      ? dishes
+      : dishes.filter((d) => (d.category ?? "").toLowerCase() === activeCategory.toLowerCase());
 
   // Search filter
-  const searchFilteredItems = categoryFilteredItems.filter((item) =>
-    item.title.toLowerCase().includes(searchQuery.toLowerCase())
+  const searchFiltered = categoryFiltered.filter((item) =>
+    (item.name ?? "").toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Veg / NonVeg filter
-  const finalFilteredItems = searchFilteredItems.filter((item) => {
+  const vegFiltered = searchFiltered.filter((item) => {
     if (vegFilter === "Veg") return item.is_veg === 1;
     if (vegFilter === "NonVeg") return item.is_veg === 0;
     return true;
   });
-  <select
-    className="border p-2 rounded-md"
-    onChange={(e) => setSortOption(e.target.value)}
-  >
-    <option value="">Sort</option>
-    <option value="LowToHigh">Price: Low → High</option>
-    <option value="HighToLow">Price: High → Low</option>
-  </select>
 
+  // Sorting
+  const finalFilteredItems = [...vegFiltered].sort((a, b) => {
+    const priceA = Number(a.price);
+    const priceB = Number(b.price);
+
+    if (sortOption === "LowToHigh") return priceA - priceB;
+    if (sortOption === "HighToLow") return priceB - priceA;
+
+    return 0;
+  });
 
   return (
     <div className="min-h-screen">
@@ -73,12 +61,20 @@ const Menu = () => {
       {/* Download Menu */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-center">
-          <Button size="lg" variant="outline" className="gap-2">
-            <Download size={20} />
-            Download Full Menu
+          <Button
+            size="lg"
+            variant="outline"
+            className="gap-2"
+            asChild
+          >
+            <a href="/menu.pdf" download="Kareems-Full-Menu.pdf">
+              <Download size={20} />
+              Download Full Menu
+            </a>
           </Button>
         </div>
       </section>
+
 
       {/* Search + Veg Filters + Category Filters */}
       <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-4">
@@ -128,6 +124,18 @@ const Menu = () => {
           </button>
         </div>
 
+        {/* Sorting */}
+        <div className="flex justify-center">
+          <select
+            className="border p-2 rounded-md"
+            onChange={(e) => setSortOption(e.target.value)}
+          >
+            <option value="">Sort</option>
+            <option value="LowToHigh">Price: Low → High</option>
+            <option value="HighToLow">Price: High → Low</option>
+          </select>
+        </div>
+
         {/* Category Filter */}
         <div className="flex justify-center gap-3 flex-wrap">
           {categories.map((category) => (
@@ -156,23 +164,22 @@ const Menu = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
-          {finalFilteredItems.map((item, idx) => (
+          {finalFilteredItems.map((item) => (
             <MenuCard
               key={item.id}
-              title={item.title}
-              description={item.description}
-              price={item.price}
-              image={item.image_url}
-              isVeg={item.is_veg === 1}
+              title={item.name}             // FIXED
+              description={item.description} // FIXED
+              price={Number(item.price)} // FIXED
+              image={item.image}            // FIXED
+              isVeg={item.is_veg === 1}     // FIXED
             />
           ))}
         </div>
       </section>
 
-      {/* CTA – Balanced 3-Column Layout */}
+      {/* CTA Section */}
       <section className="bg-secondary py-16">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-
           <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground text-center">
             Ready to Order?
           </h2>
@@ -181,22 +188,14 @@ const Menu = () => {
             Book your table or order online for delivery through our partners
           </p>
 
-          {/* CTA Buttons */}
           <div className="max-w-3xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 mt-6">
 
-            {/* Zomato */}
             <Button variant="outline" size="lg" asChild>
-              <a
-                href="https://zomato.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2"
-              >
+              <a href="https://zomato.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                 Order on Zomato <ExternalLink size={16} />
               </a>
             </Button>
 
-            {/* Center Buttons */}
             <div className="flex flex-col gap-3 items-center">
               <Button size="lg" asChild>
                 <a href="/contact">Book Table Now</a>
@@ -208,31 +207,19 @@ const Menu = () => {
                 asChild
                 className="bg-green-600 hover:bg-green-700 text-white"
               >
-                <a
-                  href="https://wa.me/919876543210"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2"
-                >
+                <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                   Connect on WhatsApp <ExternalLink size={16} />
                 </a>
               </Button>
             </div>
 
-            {/* Swiggy */}
             <Button variant="outline" size="lg" asChild>
-              <a
-                href="https://swiggy.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2"
-              >
+              <a href="https://swiggy.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
                 Order on Swiggy <ExternalLink size={16} />
               </a>
             </Button>
 
           </div>
-
         </div>
       </section>
     </div>

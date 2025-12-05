@@ -1,25 +1,32 @@
 import { useState } from "react";
-import { api } from "../../lib/api";
+import { useAuth } from "@/hooks/UseAuth";
 
 const AdminLogin = () => {
+    // 1. Store email & password from form
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-    const login = async (e) => {
+    // 2. Use our new authentication hook
+    const { login } = useAuth();
+
+    // 3. Submit handler
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        try {
-            const res = await api.post("/admin/login", { email, password });
-            localStorage.setItem("adminToken", res.data.token);
+
+        const result = await login(email, password);
+
+        if (result.success) {
             window.location.href = "/admin";
-        } catch {
-            alert("Invalid login");
+        } else {
+            alert(result.message);
         }
     };
 
+    // 4. UI form
     return (
         <div className="min-h-screen flex items-center justify-center bg-secondary">
             <form
-                onSubmit={login}
+                onSubmit={handleSubmit}
                 className="p-6 bg-white rounded-xl shadow max-w-md w-full"
             >
                 <h1 className="text-2xl font-bold mb-4">Admin Login</h1>

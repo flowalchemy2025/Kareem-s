@@ -52,7 +52,7 @@ const Footer = () => {
             <ul className="space-y-3">
               <li className="flex items-start space-x-2 text-sm text-background/80">
                 <MapPin size={16} className="mt-1 flex-shrink-0" />
-                <span>Ground Floor, Aman Lifestyle, Nelson Square, Rajnagar, Near Sadar, Chaoni, Nagpur</span>
+                <span>Aman's Lifestyle, Nelson Square, Pagalkhana Chowk, Koradi Road, Nagpur-13</span>
               </li>
               <li className="flex items-center space-x-2 text-sm text-background/80">
                 <Phone size={16} className="flex-shrink-0" />
@@ -60,7 +60,7 @@ const Footer = () => {
               </li>
               <li className="flex items-center space-x-2 text-sm text-background/80">
                 <Mail size={16} className="flex-shrink-0" />
-                <span>kareems.nagpur@gmail.com</span>
+                <span>kareems.ngp@gmail.com</span>
               </li>
             </ul>
           </div>
@@ -99,7 +99,7 @@ const Footer = () => {
             </div>
             <div className="text-sm text-background/80 space-y-1">
               <p className="font-medium text-background">Opening Hours</p>
-              <p>Daily Afternoon: 12:00 PM – 4:00 PM</p>
+              <p>Daily Afternoon: 12:00 PM – 03:30 PM</p>
               <p>Daily Evening: 7:00 PM – 11:30 PM</p>
             </div>
           </div>
