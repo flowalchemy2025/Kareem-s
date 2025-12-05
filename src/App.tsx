@@ -14,7 +14,7 @@ import Home from "./pages/Home";
 import Menu from "./pages/Menu";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
-import Aboutus from "./pages/AboutUs";
+import Aboutus from "./pages/Aboutus";
 
 // Admin Pages
 import AdminLogin from "./pages/admin/adminlogin";
